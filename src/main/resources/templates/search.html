@@ -162,27 +162,68 @@
             color: #4338ca;
         }
 
-        @media (max-width: 768px) {
+        /* Mobile responsive: card-style rows with labels */
+        @media (max-width: 640px) {
             .container {
                 padding: 16px;
             }
 
             .toolbar {
                 flex-direction: column;
+                align-items: stretch;
             }
 
             .toolbar input,
-            .toolbar select {
+            .toolbar select,
+            .toolbar .btn {
                 width: 100%;
+            }
+
+            thead {
+                display: none;
             }
 
             table {
                 font-size: 14px;
+                border-radius: 0;
+                box-shadow: none;
             }
 
-            th,
-            td {
-                padding: 12px 8px;
+            tbody tr {
+                display: block;
+                background: #fff;
+                border: 1px solid #eee;
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 8px 12px;
+            }
+
+            tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 4px;
+                border-bottom: 1px dashed #f0f0f0;
+            }
+
+            tbody td:last-child {
+                border-bottom: none;
+            }
+
+            tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6b7280;
+                flex: 0 0 40%;
+            }
+
+            .title {
+                font-size: 15px;
+            }
+
+            .actions {
+                justify-content: flex-end;
             }
         }
     </style>
@@ -231,14 +272,15 @@
             </thead>
             <tbody>
                 <tr th:each="i : ${issues}" th:attr="data-status=${i.status.name()}">
-                    <td class="nowrap" th:text="${i.id}"></td>
-                    <td class="nowrap"><span class="status-badge" th:text="${i.status.displayName}"></span></td>
-                    <td class="title" th:text="${i.title}"></td>
-                    <td class="nowrap" th:text="${i.troubledPerson}"></td>
-                    <td class="nowrap" th:text="${i.ideaPerson}"></td>
-                    <td class="nowrap" th:text="${i.targetDueDate}"></td>
-                    <td class="nowrap" th:text="${i.issueDate}"></td>
-                    <td class="actions">
+                    <td class="nowrap" data-label="チケットID" th:text="${i.id}"></td>
+                    <td class="nowrap" data-label="ステータス"><span class="status-badge"
+                            th:text="${i.status.displayName}"></span></td>
+                    <td class="title" data-label="課題タイトル" th:text="${i.title}"></td>
+                    <td class="nowrap" data-label="困り人" th:text="${i.troubledPerson}"></td>
+                    <td class="nowrap" data-label="アイデアマン" th:text="${i.ideaPerson}"></td>
+                    <td class="nowrap" data-label="解決目標期限" th:text="${i.targetDueDate}"></td>
+                    <td class="nowrap" data-label="発行日" th:text="${i.issueDate}"></td>
+                    <td class="actions" data-label="操作">
                         <a class="btn secondary" th:href="@{'/issues/' + ${i.id} + '/edit'}">編集</a>
                         <form th:action="@{'/issues/' + ${i.id} + '/delete'}" method="post" style="display:inline">
                             <button class="btn secondary" type="submit"
