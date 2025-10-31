@@ -1,0 +1,9 @@
+target
+.git
+.idea
+.vscode
+**/*.iml
+data
+node_modules
+
+
