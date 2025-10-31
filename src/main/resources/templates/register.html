@@ -1,22 +1,72 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>課題登録</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <style>
-        body { font-family: system-ui, sans-serif; margin: 24px; }
-        .container { max-width: 880px; margin: 0 auto; }
-        .row { display: grid; grid-template-columns: 160px 1fr; gap: 12px; margin-bottom: 12px; }
-        input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 8px; }
-        textarea { min-height: 160px; }
-        .actions { display: flex; gap: 8px; margin-top: 16px; }
-        .btn { padding: 8px 16px; border: none; background: #0f62fe; color: white; cursor: pointer; }
-        .btn.secondary { background: #6c757d; }
-        .error { color: #d32f2f; font-size: 0.9em; }
-        h1 { margin-bottom: 8px; }
-        .sub { color: #666; margin-bottom: 16px; }
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 24px;
+        }
+
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+        }
+
+        textarea {
+            min-height: 160px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            background: #0f62fe;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .error {
+            color: #d32f2f;
+            font-size: 0.9em;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: #666;
+            margin-bottom: 16px;
+        }
     </style>
     <script>
         function confirmDelete(id) {
@@ -39,64 +89,67 @@
         window.addEventListener('DOMContentLoaded', setTodayIfEmpty);
     </script>
 </head>
+
 <body>
-<div class="container">
-    <h1 th:text="${issue.id} == 0 ? '課題登録' : '課題更新'">課題登録</h1>
-    <div class="sub"><a th:href="@{/issues}">一覧へ戻る</a></div>
+    <div class="container">
+        <h1 th:text="${issue.id} == 0 ? '課題登録' : '課題更新'">課題登録</h1>
+        <div class="sub"><a th:href="@{/issues}">一覧へ戻る</a></div>
 
-    <form th:action="${issue.id} == 0 ? @{/issues} : @{'/issues/' + ${issue.id}}" method="post" th:object="${issue}">
-        <div class="row">
-            <label>チケットID</label>
-            <div>
-                <input type="text" th:value="${issue.id == 0 ? '採番時に自動設定' : issue.id}" disabled/>
+        <form th:action="${issue.id} == 0 ? @{/issues} : @{'/issues/' + ${issue.id}}" method="post"
+            th:object="${issue}">
+            <div class="row">
+                <label>チケットID</label>
+                <div>
+                    <input type="text" th:value="${issue.id == 0 ? '採番時に自動設定' : issue.id}" disabled />
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="issueDate">発行日</label>
-            <div>
-                <input id="issueDate" type="date" th:field="*{issueDate}"/>
-                <div class="error" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}"></div>
+            <div class="row">
+                <label for="issueDate">発行日</label>
+                <div>
+                    <input id="issueDate" type="date" th:field="*{issueDate}" />
+                    <div class="error" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}"></div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="title">課題名</label>
-            <div>
-                <input id="title" type="text" th:field="*{title}" placeholder="200文字以内"/>
-                <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+            <div class="row">
+                <label for="title">課題名</label>
+                <div>
+                    <input id="title" type="text" th:field="*{title}" placeholder="200文字以内" />
+                    <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="description">課題概要</label>
-            <div>
-                <textarea id="description" th:field="*{description}" placeholder="詳細を入力"></textarea>
-                <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            <div class="row">
+                <label for="description">課題概要（2000文字以内）</label>
+                <div>
+                    <textarea id="description" th:field="*{description}" placeholder="詳細を入力"></textarea>
+                    <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="proposer">課題提案者</label>
-            <div>
-                <input id="proposer" type="text" th:field="*{proposer}"/>
-                <div class="error" th:if="${#fields.hasErrors('proposer')}" th:errors="*{proposer}"></div>
+            <div class="row">
+                <label for="proposer">課題提案者</label>
+                <div>
+                    <input id="proposer" type="text" th:field="*{proposer}" />
+                    <div class="error" th:if="${#fields.hasErrors('proposer')}" th:errors="*{proposer}"></div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="status">課題のステータス</label>
-            <div>
-                <select id="status" th:field="*{status}">
-                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
-                </select>
-                <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+            <div class="row">
+                <label for="status">課題のステータス</label>
+                <div>
+                    <select id="status" th:field="*{status}">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                </div>
             </div>
-        </div>
-        <div class="actions">
-            <button class="btn" type="submit" th:text="${issue.id} == 0 ? '登録' : '更新'">登録</button>
-            <a class="btn secondary" th:href="@{/issues}">キャンセル</a>
-            <form th:if="${issue.id} != 0" th:action="@{'/issues/' + ${issue.id} + '/delete'}" method="post" id="deleteForm"></form>
-            <button th:if="${issue.id} != 0" class="btn secondary" type="button" onclick="confirmDelete()">削除</button>
-        </div>
-    </form>
-</div>
+            <div class="actions">
+                <button class="btn" type="submit" th:text="${issue.id} == 0 ? '登録' : '更新'">登録</button>
+                <a class="btn secondary" th:href="@{/issues}">キャンセル</a>
+                <form th:if="${issue.id} != 0" th:action="@{'/issues/' + ${issue.id} + '/delete'}" method="post"
+                    id="deleteForm"></form>
+                <button th:if="${issue.id} != 0" class="btn secondary" type="button"
+                    onclick="confirmDelete()">削除</button>
+            </div>
+        </form>
+    </div>
 </body>
+
 </html>
-
-
