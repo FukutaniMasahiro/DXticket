@@ -1,23 +1,190 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>課題検索 / 一覧</title>
     <style>
-        body { font-family: system-ui, sans-serif; margin: 24px; }
-        .container { max-width: 1080px; margin: 0 auto; }
-        .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
-        .toolbar input[type="text"], .toolbar select { padding: 8px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border-bottom: 1px solid #eee; text-align: left; padding: 8px; vertical-align: top; }
-        th { background: #fafafa; }
-        .title { font-weight: 600; }
-        .btn { padding: 8px 12px; background: #0f62fe; color: #fff; text-decoration: none; border: none; cursor: pointer; }
-        .btn.secondary { background: #6c757d; }
-        .actions { display: flex; gap: 8px; }
-        .nowrap { white-space: nowrap; }
-        .desc { color: #444; font-size: 0.92em; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+        }
+
+        h1 {
+            margin: 0 0 24px 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1::before {
+            content: "📋";
+            font-size: 32px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input[type="text"],
+        .toolbar select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .toolbar input[type="text"]:focus,
+        .toolbar select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 16px 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        th {
+            background: transparent;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .title {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn.secondary:hover {
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nowrap {
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .toolbar input,
+            .toolbar select {
+                width: 100%;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 12px 8px;
+            }
+        }
     </style>
     <script>
         function filter() {
@@ -25,9 +192,9 @@
             const status = document.getElementById('statusFilter').value;
             const rows = document.querySelectorAll('#list tbody tr');
             rows.forEach(r => {
-                const title = r.querySelector('.title').innerText.toLowerCase();
-                const troubled = (r.querySelector('.troubled')?.innerText || '').toLowerCase();
-                const idea = (r.querySelector('.idea')?.innerText || '').toLowerCase();
+                const title = r.querySelector('.title')?.innerText.toLowerCase() || '';
+                const troubled = (r.querySelector('td:nth-child(4)')?.innerText || '').toLowerCase();
+                const idea = (r.querySelector('td:nth-child(5)')?.innerText || '').toLowerCase();
                 const st = r.getAttribute('data-status');
                 const okText = !q || title.includes(q) || troubled.includes(q) || idea.includes(q);
                 const okStatus = !status || status === st;
@@ -36,51 +203,52 @@
         }
     </script>
 </head>
+
 <body>
-<div class="container">
-    <h1>課題検索 / 一覧</h1>
-    <div class="toolbar">
-        <a class="btn" th:href="@{/issues/new}">新規登録</a>
-        <input id="q" type="text" placeholder="フリーワード（タイトル/困り人/アイデアマン）" th:value="${q}" oninput="filter()"/>
-        <select id="statusFilter" onchange="filter()">
-            <option value="">全てのステータス</option>
-            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
-        </select>
+    <div class="container">
+        <h1>課題検索 / 一覧</h1>
+        <div class="toolbar">
+            <a class="btn" th:href="@{/issues/new}">＋ 新規登録</a>
+            <input id="q" type="text" placeholder="フリーワード検索" th:value="${q}" oninput="filter()" />
+            <select id="statusFilter" onchange="filter()">
+                <option value="">全てのステータス</option>
+                <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.displayName}"></option>
+            </select>
+        </div>
+
+        <table id="list">
+            <thead>
+                <tr>
+                    <th class="nowrap">チケットID</th>
+                    <th class="nowrap">ステータス</th>
+                    <th>課題タイトル</th>
+                    <th class="nowrap">困り人</th>
+                    <th class="nowrap">アイデアマン</th>
+                    <th class="nowrap">解決目標期限</th>
+                    <th class="nowrap">発行日</th>
+                    <th class="nowrap">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="i : ${issues}" th:attr="data-status=${i.status.name()}">
+                    <td class="nowrap" th:text="${i.id}"></td>
+                    <td class="nowrap"><span class="status-badge" th:text="${i.status.displayName}"></span></td>
+                    <td class="title" th:text="${i.title}"></td>
+                    <td class="nowrap" th:text="${i.troubledPerson}"></td>
+                    <td class="nowrap" th:text="${i.ideaPerson}"></td>
+                    <td class="nowrap" th:text="${i.targetDueDate}"></td>
+                    <td class="nowrap" th:text="${i.issueDate}"></td>
+                    <td class="actions">
+                        <a class="btn secondary" th:href="@{'/issues/' + ${i.id} + '/edit'}">編集</a>
+                        <form th:action="@{'/issues/' + ${i.id} + '/delete'}" method="post" style="display:inline">
+                            <button class="btn secondary" type="submit"
+                                onclick="return confirm('削除してよろしいですか？')">削除</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-
-    <table id="list">
-        <thead>
-        <tr>
-            <th class="nowrap">チケットID</th>
-            <th class="nowrap">ステータス</th>
-            <th>課題タイトル</th>
-            <th class="nowrap">困り人</th>
-            <th class="nowrap">アイデアマン</th>
-            <th class="nowrap">解決目標期限</th>
-            <th class="nowrap">発行日</th>
-            <th class="nowrap">操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="i : ${issues}" th:attr="data-status=${i.status}">
-            <td class="nowrap" th:text="${i.id}"></td>
-            <td class="nowrap" th:text="${i.status.displayName}"></td>
-            <td class="title" th:text="${i.title}"></td>
-            <td class="nowrap" th:text="${i.troubledPerson}"></td>
-            <td class="nowrap" th:text="${i.ideaPerson}"></td>
-            <td class="nowrap" th:text="${i.targetDueDate}"></td>
-            <td class="nowrap" th:text="${i.issueDate}"></td>
-            <td class="actions">
-                <a class="btn secondary" th:href="@{'/issues/' + ${i.id} + '/edit'}">編集</a>
-                <form th:action="@{'/issues/' + ${i.id} + '/delete'}" method="post" style="display:inline">
-                    <button class="btn secondary" type="submit" onclick="return confirm('削除してよろしいですか？')">削除</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
 </body>
+
 </html>
-
-

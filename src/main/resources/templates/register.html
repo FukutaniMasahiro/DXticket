@@ -7,21 +7,75 @@
     <title>課題登録</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: system-ui, sans-serif;
-            margin: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 880px;
+            max-width: 900px;
             margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1::before {
+            content: "✏️";
+            font-size: 32px;
+        }
+
+        .sub {
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .sub a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .sub a:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .row {
             display: grid;
-            grid-template-columns: 160px 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+            grid-template-columns: 180px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        label {
+            font-weight: 500;
+            color: #374151;
+            padding-top: 12px;
         }
 
         input[type="text"],
@@ -29,43 +83,116 @@
         select,
         textarea {
             width: 100%;
-            padding: 8px;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input[type="text"]:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
         }
 
         textarea {
-            min-height: 160px;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            transform: scale(1.2);
+            accent-color: #6366f1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            padding-top: 0;
+            font-weight: normal;
+            cursor: pointer;
         }
 
         .actions {
             display: flex;
-            gap: 8px;
-            margin-top: 16px;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid #f0f0f0;
         }
 
         .btn {
-            padding: 8px 16px;
+            padding: 12px 24px;
             border: none;
-            background: #0f62fe;
-            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:not(.secondary) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:not(.secondary):hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .btn.secondary {
-            background: #6c757d;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn.secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
         }
 
         .error {
-            color: #d32f2f;
-            font-size: 0.9em;
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 4px;
+            display: block;
         }
 
-        h1 {
-            margin-bottom: 8px;
-        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+            }
 
-        .sub {
-            color: #666;
-            margin-bottom: 16px;
+            .row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            label {
+                padding-top: 0;
+            }
         }
     </style>
     <script>
@@ -95,8 +222,8 @@
         <h1 th:text="${issue.id} == 0 ? '課題登録' : '課題更新'">課題登録</h1>
         <div class="sub"><a th:href="@{/issues}">一覧へ戻る</a></div>
 
-        <form th:action="${issue.id} == 0 ? @{/issues} : @{'/issues/' + ${issue.id}}" method="post"
-            th:object="${issue}" enctype="multipart/form-data">
+        <form th:action="${issue.id} == 0 ? @{/issues} : @{'/issues/' + ${issue.id}}" method="post" th:object="${issue}"
+            enctype="multipart/form-data">
             <div class="row">
                 <label>チケットID</label>
                 <div>
@@ -164,17 +291,27 @@
             </div>
             <div class="row">
                 <label>カテゴリ</label>
-                <div>
-                    <div>
-                        <label><input type="checkbox" name="categoryIds" value="1" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(1)}"/> Fieiホールディングス内部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="2" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(2)}"/> Fieiホールディングス外部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="3" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(3)}"/> FBI内部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="4" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(4)}"/> FBI外部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="5" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(5)}"/> KM内部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="6" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(6)}"/> KM外部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="7" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(7)}"/> サンリッチ内部</label><br/>
-                        <label><input type="checkbox" name="categoryIds" value="8" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(8)}"/> サンリッチ外部</label>
-                    </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="categoryIds" value="1"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(1)}" />
+                        Fieiホールディングス内部</label>
+                    <label><input type="checkbox" name="categoryIds" value="2"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(2)}" />
+                        Fieiホールディングス外部</label>
+                    <label><input type="checkbox" name="categoryIds" value="3"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(3)}" /> FBI内部</label>
+                    <label><input type="checkbox" name="categoryIds" value="4"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(4)}" /> FBI外部</label>
+                    <label><input type="checkbox" name="categoryIds" value="5"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(5)}" /> KM内部</label>
+                    <label><input type="checkbox" name="categoryIds" value="6"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(6)}" /> KM外部</label>
+                    <label><input type="checkbox" name="categoryIds" value="7"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(7)}" />
+                        サンリッチ内部</label>
+                    <label><input type="checkbox" name="categoryIds" value="8"
+                            th:checked="${issue.categoryIds != null and issue.categoryIds.contains(8)}" />
+                        サンリッチ外部</label>
                 </div>
             </div>
             <div class="row">
