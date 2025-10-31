@@ -26,10 +26,10 @@
             const rows = document.querySelectorAll('#list tbody tr');
             rows.forEach(r => {
                 const title = r.querySelector('.title').innerText.toLowerCase();
-                const desc = r.querySelector('.desc').innerText.toLowerCase();
-                const proposer = r.querySelector('.proposer').innerText.toLowerCase();
+                const troubled = (r.querySelector('.troubled')?.innerText || '').toLowerCase();
+                const idea = (r.querySelector('.idea')?.innerText || '').toLowerCase();
                 const st = r.getAttribute('data-status');
-                const okText = !q || title.includes(q) || desc.includes(q) || proposer.includes(q);
+                const okText = !q || title.includes(q) || troubled.includes(q) || idea.includes(q);
                 const okStatus = !status || status === st;
                 r.style.display = (okText && okStatus) ? '' : 'none';
             });
@@ -41,7 +41,7 @@
     <h1>課題検索 / 一覧</h1>
     <div class="toolbar">
         <a class="btn" th:href="@{/issues/new}">新規登録</a>
-        <input id="q" type="text" placeholder="フリーワード（タイトル/概要/提案者）" th:value="${q}" oninput="filter()"/>
+        <input id="q" type="text" placeholder="フリーワード（タイトル/困り人/アイデアマン）" th:value="${q}" oninput="filter()"/>
         <select id="statusFilter" onchange="filter()">
             <option value="">全てのステータス</option>
             <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
@@ -52,23 +52,24 @@
         <thead>
         <tr>
             <th class="nowrap">チケットID</th>
-            <th class="nowrap">発行日</th>
-            <th>課題名 / 課題概要</th>
-            <th class="nowrap">提案者</th>
             <th class="nowrap">ステータス</th>
+            <th>課題タイトル</th>
+            <th class="nowrap">困り人</th>
+            <th class="nowrap">アイデアマン</th>
+            <th class="nowrap">解決目標期限</th>
+            <th class="nowrap">発行日</th>
             <th class="nowrap">操作</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="i : ${issues}" th:attr="data-status=${i.status}">
             <td class="nowrap" th:text="${i.id}"></td>
+            <td class="nowrap" th:text="${i.status.displayName}"></td>
+            <td class="title" th:text="${i.title}"></td>
+            <td class="nowrap" th:text="${i.troubledPerson}"></td>
+            <td class="nowrap" th:text="${i.ideaPerson}"></td>
+            <td class="nowrap" th:text="${i.targetDueDate}"></td>
             <td class="nowrap" th:text="${i.issueDate}"></td>
-            <td>
-                <div class="title" th:text="${i.title}"></div>
-                <div class="desc" th:text="${i.description}"></div>
-            </td>
-            <td class="proposer" th:text="${i.proposer}"></td>
-            <td th:text="${i.status}"></td>
             <td class="actions">
                 <a class="btn secondary" th:href="@{'/issues/' + ${i.id} + '/edit'}">編集</a>
                 <form th:action="@{'/issues/' + ${i.id} + '/delete'}" method="post" style="display:inline">

@@ -4,6 +4,8 @@ import com.example.mintikeissues.domain.Issue;
 import com.example.mintikeissues.domain.Status;
 import com.example.mintikeissues.service.IssueService;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.mintikeissues.service.AttachmentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,9 +18,11 @@ import java.util.Arrays;
 @RequestMapping("/")
 public class IssueController {
     private final IssueService issueService;
+    private final AttachmentService attachmentService;
 
-    public IssueController(IssueService issueService) {
+    public IssueController(IssueService issueService, AttachmentService attachmentService) {
         this.issueService = issueService;
+        this.attachmentService = attachmentService;
     }
 
     @GetMapping
@@ -38,7 +42,7 @@ public class IssueController {
     public String createForm(Model model) {
         Issue issue = new Issue();
         issue.setIssueDate(LocalDate.now());
-        issue.setStatus(Status.受付);
+        issue.setStatus(Status.NEW);
         model.addAttribute("issue", issue);
         model.addAttribute("statuses", Arrays.asList(Status.values()));
         return "register";
@@ -47,12 +51,14 @@ public class IssueController {
     @PostMapping("/issues")
     public String create(@Valid @ModelAttribute("issue") Issue issue,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         @RequestParam(name = "files", required = false) MultipartFile[] files) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("statuses", Arrays.asList(Status.values()));
             return "register";
         }
-        issueService.create(issue);
+        Issue created = issueService.create(issue);
+        attachmentService.saveAll(created.getId(), files);
         return "redirect:/issues";
     }
 
@@ -68,13 +74,15 @@ public class IssueController {
     public String update(@PathVariable("id") long id,
                          @Valid @ModelAttribute("issue") Issue issue,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         @RequestParam(name = "files", required = false) MultipartFile[] files) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("statuses", Arrays.asList(Status.values()));
             return "register";
         }
         issue.setId(id);
         issueService.update(issue);
+        attachmentService.saveAll(id, files);
         return "redirect:/issues";
     }
 

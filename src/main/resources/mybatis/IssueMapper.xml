@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mintikeissues.repository.mybatis.IssueMapper">
+
+    <resultMap id="IssueMap" type="com.example.mintikeissues.domain.Issue">
+        <id property="id" column="id" />
+        <result property="issueDate" column="issue_date" />
+        <result property="status" column="status" javaType="com.example.mintikeissues.domain.Status" />
+        <result property="troubledPerson" column="troubled_person" />
+        <result property="ideaPerson" column="idea_person" />
+        <result property="supportMembers" column="support_members" />
+        <result property="title" column="title" />
+        <result property="targetDueDate" column="target_due_date" />
+        <result property="currentProblem" column="current_problem" />
+        <result property="riskIfUnresolved" column="risk_if_unresolved" />
+        <result property="targetDepartments" column="target_departments" />
+        <result property="actionDetails" column="action_details" />
+        <result property="memo" column="memo" />
+        <result property="completedDate" column="completed_date" />
+        <result property="effectAfterExecution" column="effect_after_execution" />
+        <result property="reusability" column="reusability" />
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, issue_date, status, troubled_person, idea_person, support_members,
+        title, target_due_date, current_problem, risk_if_unresolved,
+        target_departments, action_details, memo,
+        completed_date, effect_after_execution, reusability
+    </sql>
+
+    <select id="selectAll" resultMap="IssueMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM issues
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectById" parameterType="long" resultMap="IssueMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM issues WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.mintikeissues.domain.Issue" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO issues (
+            issue_date, status, troubled_person, idea_person, support_members,
+            title, target_due_date, current_problem, risk_if_unresolved,
+            target_departments, action_details, memo,
+            completed_date, effect_after_execution, reusability
+        ) VALUES (
+            #{issueDate}, #{status}, #{troubledPerson}, #{ideaPerson}, #{supportMembers},
+            #{title}, #{targetDueDate}, #{currentProblem}, #{riskIfUnresolved},
+            #{targetDepartments}, #{actionDetails}, #{memo},
+            #{completedDate}, #{effectAfterExecution}, #{reusability}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.mintikeissues.domain.Issue">
+        UPDATE issues SET
+            issue_date = #{issueDate},
+            status = #{status},
+            troubled_person = #{troubledPerson},
+            idea_person = #{ideaPerson},
+            support_members = #{supportMembers},
+            title = #{title},
+            target_due_date = #{targetDueDate},
+            current_problem = #{currentProblem},
+            risk_if_unresolved = #{riskIfUnresolved},
+            target_departments = #{targetDepartments},
+            action_details = #{actionDetails},
+            memo = #{memo},
+            completed_date = #{completedDate},
+            effect_after_execution = #{effectAfterExecution},
+            reusability = #{reusability}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM issues WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteIssueCategories">
+        DELETE FROM issue_categories WHERE issue_id = #{issueId}
+    </delete>
+
+    <insert id="insertIssueCategory">
+        INSERT INTO issue_categories(issue_id, category_id) VALUES(#{issueId}, #{categoryId})
+    </insert>
+
+</mapper>
+
+

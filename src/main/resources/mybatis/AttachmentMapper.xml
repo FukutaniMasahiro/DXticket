@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mintikeissues.repository.mybatis.AttachmentMapper">
+
+    <resultMap id="AttachmentMap" type="com.example.mintikeissues.domain.Attachment">
+        <id property="id" column="id" />
+        <result property="issueId" column="issue_id" />
+        <result property="originalName" column="original_name" />
+        <result property="storedPath" column="stored_path" />
+        <result property="contentType" column="content_type" />
+        <result property="sizeBytes" column="size_bytes" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.mintikeissues.domain.Attachment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO attachments(issue_id, original_name, stored_path, content_type, size_bytes)
+        VALUES(#{issueId}, #{originalName}, #{storedPath}, #{contentType}, #{sizeBytes})
+    </insert>
+
+    <select id="selectByIssueId" resultMap="AttachmentMap">
+        SELECT id, issue_id, original_name, stored_path, content_type, size_bytes
+        FROM attachments WHERE issue_id = #{issueId}
+    </select>
+
+    <delete id="deleteByIssueId" parameterType="long">
+        DELETE FROM attachments WHERE issue_id = #{issueId}
+    </delete>
+
+</mapper>
+
+

@@ -96,7 +96,7 @@
         <div class="sub"><a th:href="@{/issues}">一覧へ戻る</a></div>
 
         <form th:action="${issue.id} == 0 ? @{/issues} : @{'/issues/' + ${issue.id}}" method="post"
-            th:object="${issue}">
+            th:object="${issue}" enctype="multipart/form-data">
             <div class="row">
                 <label>チケットID</label>
                 <div>
@@ -111,33 +111,113 @@
                 </div>
             </div>
             <div class="row">
-                <label for="title">課題名</label>
+                <label for="status">ステータス</label>
                 <div>
-                    <input id="title" type="text" th:field="*{title}" placeholder="200文字以内" />
+                    <select id="status" th:field="*{status}">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.displayName}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                </div>
+            </div>
+            <div class="row">
+                <label for="troubledPerson">困り人</label>
+                <div>
+                    <input id="troubledPerson" type="text" th:field="*{troubledPerson}" placeholder="20文字程度" />
+                </div>
+            </div>
+            <div class="row">
+                <label for="ideaPerson">アイデアマン</label>
+                <div>
+                    <input id="ideaPerson" type="text" th:field="*{ideaPerson}" placeholder="20文字程度" />
+                </div>
+            </div>
+            <div class="row">
+                <label for="supportMembers">サポートメンバー</label>
+                <div>
+                    <input id="supportMembers" type="text" th:field="*{supportMembers}" placeholder="200文字程度" />
+                </div>
+            </div>
+            <div class="row">
+                <label for="title">課題タイトル</label>
+                <div>
+                    <input id="title" type="text" th:field="*{title}" placeholder="100文字程度" />
                     <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                 </div>
             </div>
             <div class="row">
-                <label for="description">課題概要（2000文字以内）</label>
+                <label for="targetDueDate">解決目標期限</label>
                 <div>
-                    <textarea id="description" th:field="*{description}" placeholder="詳細を入力"></textarea>
-                    <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                    <input id="targetDueDate" type="date" th:field="*{targetDueDate}" />
                 </div>
             </div>
             <div class="row">
-                <label for="proposer">課題提案者</label>
+                <label for="currentProblem">現状と問題点</label>
                 <div>
-                    <input id="proposer" type="text" th:field="*{proposer}" />
-                    <div class="error" th:if="${#fields.hasErrors('proposer')}" th:errors="*{proposer}"></div>
+                    <textarea id="currentProblem" th:field="*{currentProblem}"></textarea>
                 </div>
             </div>
             <div class="row">
-                <label for="status">課題のステータス</label>
+                <label for="riskIfUnresolved">解決しなかった場合のリスク</label>
                 <div>
-                    <select id="status" th:field="*{status}">
-                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
-                    </select>
-                    <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                    <textarea id="riskIfUnresolved" th:field="*{riskIfUnresolved}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <label>カテゴリ</label>
+                <div>
+                    <div>
+                        <label><input type="checkbox" name="categoryIds" value="1" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(1)}"/> Fieiホールディングス内部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="2" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(2)}"/> Fieiホールディングス外部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="3" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(3)}"/> FBI内部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="4" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(4)}"/> FBI外部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="5" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(5)}"/> KM内部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="6" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(6)}"/> KM外部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="7" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(7)}"/> サンリッチ内部</label><br/>
+                        <label><input type="checkbox" name="categoryIds" value="8" th:checked="${issue.categoryIds != null and issue.categoryIds.contains(8)}"/> サンリッチ外部</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <label for="targetDepartments">対象部署/関連部署</label>
+                <div>
+                    <input id="targetDepartments" type="text" th:field="*{targetDepartments}" placeholder="100文字程度" />
+                </div>
+            </div>
+            <div class="row">
+                <label for="attachments">関連資料</label>
+                <div>
+                    <input id="attachments" type="file" name="files" multiple />
+                    <div class="sub">ドラッグ&ドロップ対応（コンテナ永続領域に保存予定）</div>
+                </div>
+            </div>
+            <div class="row">
+                <label for="actionDetails">アクション内容</label>
+                <div>
+                    <textarea id="actionDetails" th:field="*{actionDetails}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <label for="memo">メモ</label>
+                <div>
+                    <textarea id="memo" th:field="*{memo}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <label for="completedDate">完了日</label>
+                <div>
+                    <input id="completedDate" type="date" th:field="*{completedDate}" />
+                </div>
+            </div>
+            <div class="row">
+                <label for="effectAfterExecution">実行後の効果測定</label>
+                <div>
+                    <textarea id="effectAfterExecution" th:field="*{effectAfterExecution}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <label for="reusability">汎用性/横展開の可能性</label>
+                <div>
+                    <textarea id="reusability" th:field="*{reusability}"></textarea>
                 </div>
             </div>
             <div class="actions">
